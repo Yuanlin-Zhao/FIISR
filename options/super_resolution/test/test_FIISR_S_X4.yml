@@ -1,0 +1,55 @@
+name: ''
+model_type: SRModel
+scale: 4
+num_gpu: 1
+manual_seed: 10
+
+# dataset and data loader settings
+datasets:
+  test_1:  # the 1st test dataset
+    task: SR
+    name: Set5
+    type: PairedImageDataset
+    dataroot_gt: D:\zyl\sr\dataset\M3FD\val\GT
+    dataroot_lq: D:\zyl\sr\dataset\M3FD\val\GT
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+
+
+network_g:
+  type: FIISR
+  scale: 4
+  in_chans: 3
+  num_experts: 6
+  img_range: 1.0
+  num_layers: 6   #6=S 12=L
+  embedding_dim: 64
+  use_shuffle: True
+  topk: 2
+  recursive: 2
+  global_kernel_size: 11
+
+
+# path
+path:
+  pretrain_network_g: D:\zyl\textsr\ours\seemoredetails-main\experiments\train_FIISR_X4-M3FD\models\net_g_50000.pth
+  strict_load_g: True
+
+# validation settings
+val:
+  save_img: True
+  suffix: ''  # add suffix to saved images, if None, use exp name
+  use_chop: True  # True to save memory, if img too large
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 4
+      test_y_channel: true
+    ssim:
+      type: calculate_ssim
+      crop_border: 4
+      test_y_channel: true
+
